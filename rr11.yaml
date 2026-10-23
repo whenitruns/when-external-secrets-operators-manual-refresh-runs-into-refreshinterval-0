@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rr11
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: rr11-fake
+  namespace: rr11
+spec:
+  provider:
+    fake:
+      data:
+        - key: /rr11/token
+          value: value-1
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: es-zero
+  namespace: rr11
+spec:
+  refreshInterval: 0s
+  secretStoreRef:
+    name: rr11-fake
+    kind: SecretStore
+  target:
+    name: es-zero-secret
+  data:
+    - secretKey: token
+      remoteRef:
+        key: /rr11/token
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: es-hourly
+  namespace: rr11
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: rr11-fake
+    kind: SecretStore
+  target:
+    name: es-hourly-secret
+  data:
+    - secretKey: token
+      remoteRef:
+        key: /rr11/token
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: es-onchange
+  namespace: rr11
+spec:
+  refreshPolicy: OnChange
+  refreshInterval: 0s
+  secretStoreRef:
+    name: rr11-fake
+    kind: SecretStore
+  target:
+    name: es-onchange-secret
+  data:
+    - secretKey: token
+      remoteRef:
+        key: /rr11/token
